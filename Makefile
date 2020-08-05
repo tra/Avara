@@ -124,7 +124,7 @@ $(BUILD_DIR)/%.mm.o: %.mm
 .PHONY: clean publish
 
 set-version:
-	echo "#define GIT_VERSION \"$(GIT_HASH)\"" > src/util/GitVersion.h
+	grep -q $(GIT_HASH) src/util/GitVersion.h || (echo "#define GIT_VERSION \"$(GIT_HASH)\"" > src/util/GitVersion.h)
 
 clean:
 	$(RM) -r $(BUILD_DIR)
