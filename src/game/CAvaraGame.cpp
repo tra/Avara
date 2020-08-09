@@ -98,8 +98,6 @@ CNetManager* CAvaraGame::CreateNetManager() {
 
 CAvaraGame::CAvaraGame(int frameTime) {
     this->frameTime = frameTime; // milliseconds
-    this->latencyTolerance = gApplication->Number(kLatencyToleranceTag);
-    this->AdjustLatencyFrameTime();
 }
 void CAvaraGame::IAvaraGame(CAvaraApp *theApp) {
     short i;
@@ -165,6 +163,7 @@ void CAvaraGame::IAvaraGame(CAvaraApp *theApp) {
     loadedDesigner[0] = 0;
     loadedInfo[0] = 0;
     loadedTimeLimit = 600;
+    timeInMsec = 0;
     timeInSeconds = 0;
     simpleExplosions = false;
 
@@ -523,6 +522,7 @@ void CAvaraGame::LevelReset(Boolean clearReset) {
     loadedDesigner[0] = 0;
     loadedInfo[0] = 0;
     loadedTimeLimit = 600;
+    timeInMsec = 0;
     timeInSeconds = 0;
 
     worldShader->Reset();
@@ -629,7 +629,8 @@ void CAvaraGame::EndScript() {
 
     groundTraction = ReadFixedVar(iDefaultTraction);
     groundFriction = ReadFixedVar(iDefaultFriction);
-    gravityRatio = ReadFixedVar(iGravity) * FrameTimeScale(2);
+    gravityRatio = ReadFixedVar(iGravity);
+    // gravityRatio = ReadFixedVar(iGravity) * FrameTimeScale(2);
     groundStepSound = ReadLongVar(iGroundStepSound);
     gHub->LoadSample(groundStepSound);
 
@@ -684,6 +685,8 @@ static Boolean takeShot = false;
 
 void CAvaraGame::ReadGamePrefs() {
     sensitivity = itsApp->Number(kMouseSensitivityTag);
+    latencyTolerance = gApplication->Number(kLatencyToleranceTag);
+    AdjustFrameTime();
 }
 
 void CAvaraGame::ResumeGame() {
@@ -867,7 +870,8 @@ bool CAvaraGame::GameTick() {
 
     frameNumber++;
 
-    timeInSeconds = FMulDivNZ(frameNumber, frameTime, 1000);
+    timeInMsec += latencyFrameTime;
+    timeInSeconds = timeInMsec / 1000;
 
     itsNet->AutoLatencyControl(frameNumber, longWait);
 
@@ -877,7 +881,7 @@ SDL_Log("latencyTolerance = %ld\n", latencyTolerance);
             itsNet->FrameAction();
 
     canPreSend = true;
-    //nextScheduledFrame = startTime + frameTime;
+
     nextScheduledFrame = startTime + latencyFrameTime;
 
     itsDepot->RunSliverActions();
@@ -1023,12 +1027,32 @@ CPlayerManager *CAvaraGame::GetPlayerManager(CAbstractPlayer *thePlayer) {
 }
 
 double CAvaraGame::FrameTimeScale(double exponent) {
-    return pow(double(frameTime)/CLASSICFRAMETIME, exponent);
+    double fts = double(latencyFrameTime)/CLASSICFRAMETIME;
+    if (exponent != 1) {
+        fts = pow(fts, exponent);
+    }
+    return fts;
 }
 
+#define BASE_FRAME_MULTIPLIER 3
+long CAvaraGame::RoundTripToFrameLatency(long roundTripTime) {
+    // quadratic equation to solve for LT
+    float baseLatency = roundTripTime / (2*frameTime);
+    return (8*baseLatency / (BASE_FRAME_MULTIPLIER + sqrt(BASE_FRAME_MULTIPLIER*BASE_FRAME_MULTIPLIER+16*baseLatency)));
+}
 
-void CAvaraGame::AdjustLatencyFrameTime() {
-    // user standard frame rate for LT 0-1, increase beyond that
-    latencyFrameTime = frameTime * std::max(3 + latencyTolerance, (long)4) / 4;
+//void CAvaraGame::ChangeLatencyTolerance() {
+void CAvaraGame::AdjustFrameTime() {
+    // latencyFrameTime = (3 + latencyTolerance) * atomicFrameTime; ?
+    latencyFrameTime = (BASE_FRAME_MULTIPLIER + latencyTolerance) * frameTime / 4;
     SDL_Log("*** latencyFrameTime = %ld\n", latencyFrameTime);
+}
+
+long CAvaraGame::BaseFrameTime() {
+    return frameTime;
+}
+
+long CAvaraGame::FrameTime() {
+    return frameTime;
+    // return latencyFrameTime;
 }

@@ -115,8 +115,6 @@ void CAbstractPlayer::StartSystems() {
     baseMass = mass;
     turningEffect = FDegToOne(FIX(3.5));
     movementCost = FIX3(10);
-    maxAcceleration = FIX3(250)*itsGame->FrameTimeScale(2);
-#define CLASSICACCELERATION FIX3(250)
     motorFriction = FIX(pow(0.75, itsGame->FrameTimeScale()));
 #define CLASSICMOTORFRICTION FIX3(750)
     didBump = true;
@@ -594,14 +592,11 @@ void CAbstractPlayer::KeyboardControl(FunctionTable *ft) {
         if (!isInLimbo) {
             modAccel = FDivNZ(baseMass, GetTotalMass());
             modAccel = FMul(modAccel, modAccel);
-            modAccel = FMul(CLASSICACCELERATION, modAccel); //  FMulDivNZ(maxAcceleration, baseMass, GetTotalMass());
+            modAccel = FMul(MaxAcceleration(), modAccel); //  FMulDivNZ(maxAcceleration, baseMass, GetTotalMass());
             // top speed = accel * motorFriction / (1 - motorFriction)
             // Scale top speed: top speed * frameTime/64
             // Use scaled top speed and scaled motor friction to figure out an adjusted acceleration
             // THEREFORE accel = accel * frameTimeScale * classicMotorFriction * (1 - motorFriction) / ((1 - classicMotorFriction) * motorFriction)
-            if (itsGame->frameTime != 64) {
-                modAccel = FDivNZ(itsGame->FrameTimeScale() * FMul(modAccel, FMul(CLASSICMOTORFRICTION, FIX1 - motorFriction)),  FMul(motorFriction, FIX1 - CLASSICMOTORFRICTION));
-            }
 
             motionFlags = 0;
 
@@ -637,7 +632,7 @@ void CAbstractPlayer::KeyboardControl(FunctionTable *ft) {
                 theSound->SetVolume(FIX(2));
                 theSound->SetSoundLink(itsSoundLink);
                 theSound->SetControlLink(boostControlLink);
-                theSound->SetSoundLength((BOOSTLENGTH * itsGame->frameTime) << 6);
+                theSound->SetSoundLength((BOOSTLENGTH * itsGame->FrameTime()) << 6);
                 theSound->Start();
             }
 
@@ -1268,7 +1263,7 @@ Boolean CAbstractPlayer::TryTransport(Fixed *where, short soundId, Fixed volume,
         perFrames = theSound->sampleLen;
         perFrames -= perFrames >> 2;
         if (perFrames) {
-            perFrames = FMulDivNZ(theSound->GetSampleRate(), itsGame->frameTime, perFrames) >> 10;
+            perFrames = FMulDivNZ(theSound->GetSampleRate(), itsGame->BaseFrameTime(), perFrames) >> 10;
             speedV[0] = FMul(location[0] - oldLoc[0], perFrames);
             speedV[1] = 0; //   FMul(location[1] - oldLoc[1], perFrames);
             speedV[2] = FMul(location[2] - oldLoc[2], perFrames);
@@ -1280,7 +1275,7 @@ Boolean CAbstractPlayer::TryTransport(Fixed *where, short soundId, Fixed volume,
         theSound->Start();
 
         if (options & kSpinOption) {
-            motors[0] = maxAcceleration << 7;
+            motors[0] = MaxAcceleration() << 7;
             motors[1] = -motors[0];
         } else {
             motors[0] = motors[1] = 0;
@@ -1307,7 +1302,7 @@ void CAbstractPlayer::ResumeLevel() {
 
 extern Fixed sliverGravity;
 
-#define INTERPTIME 20
+#define INTERPTIME (20 * itsGame->FrameTimeScale())
 
 void CAbstractPlayer::Win(long winScore, CAbstractActor *teleport) {
     short count = 16;
@@ -1415,7 +1410,7 @@ void    CAbstractPlayer::FillGameResultRecord(
     TaggedGameResult    *res)
 {
     if(winFrame >= 0)
-    {   res->r.time = FMulDivNZ(winFrame, itsGame->frameTime, 10);
+    {   res->r.time = FMulDivNZ(winFrame, itsGame->FrameTime(), 10);
     }
     else
     {   res->r.time = -1;
@@ -1496,7 +1491,7 @@ void CAbstractPlayer::TakeGoody(GoodyRecord *gr) {
         theSound->SetVolume(FIX(2));
         theSound->SetSoundLink(itsSoundLink);
         theSound->SetControlLink(boostControlLink);
-        theSound->SetSoundLength((gr->boostTime * itsGame->frameTime) << 6);
+        theSound->SetSoundLength((gr->boostTime * itsGame->BaseFrameTime()) << 6);
         theSound->Start();
     }
 }
@@ -1544,4 +1539,9 @@ void CAbstractPlayer::WasHit(RayHitRecord *theHit, Fixed hitEnergy) {
     SignalAttachments(kHostDamage, &hitEnergy);
 
     CRealMovers::WasHit(theHit, hitEnergy);
+}
+
+Fixed CAbstractPlayer::MaxAcceleration() {
+    return FIX3(250)*itsGame->FrameTimeScale(2);
+#define CLASSICACCELERATION FIX3(250)
 }

@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
         app->GetNet()->ChangeNet(kClientNet, connectAddress);
     }
 
-    mainloop(app->GetGame()->frameTime / 4);
+    mainloop(app->GetGame()->BaseFrameTime() / 4);
 
     app->Done();
 

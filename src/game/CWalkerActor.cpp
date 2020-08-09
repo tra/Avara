@@ -680,7 +680,7 @@ void CWalkerActor::UndoLegs() {
 void CWalkerActor::ReceiveConfig(PlayerConfigRecord *config) {
     if (itsGame->frameNumber == 0) {
         short hullRes;
-        HullConfigRecord hull;
+        // HullConfigRecord hull;
         Handle hullHandle;
 
         hullRes = config->hullType;
@@ -754,7 +754,7 @@ void CWalkerActor::ReceiveConfig(PlayerConfigRecord *config) {
         activeGunEnergy = FMul(activeGunEnergy, hull.minShotRatio);
         fullGunEnergy = FMul(fullGunEnergy, hull.maxShotRatio);
 
-        maxAcceleration = FMul(maxAcceleration, hull.accelerationRatio);
+        // maxAcceleration = FMul(maxAcceleration, hull.accelerationRatio);
         jumpBasePower = FMul(jumpBasePower, hull.jumpPowerRatio);
         if (hullHandle) {
             ReleaseResource(hullHandle);
@@ -765,4 +765,8 @@ void CWalkerActor::ReceiveConfig(PlayerConfigRecord *config) {
     }
 
     CAbstractPlayer::ReceiveConfig(config);
+}
+
+Fixed CWalkerActor::MaxAcceleration() {
+    return FMul(CAbstractPlayer::MaxAcceleration(), hull.accelerationRatio);
 }

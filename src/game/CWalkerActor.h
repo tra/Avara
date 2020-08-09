@@ -25,6 +25,8 @@ typedef struct {
 } LegInfo;
 
 class CWalkerActor : public CAbstractPlayer {
+private:
+    HullConfigRecord hull;
 public:
     CBSPPart *markerCube;
     LegInfo legs[2];
@@ -80,4 +82,6 @@ public:
     virtual void UndoLegs();
 
     virtual void ReceiveConfig(PlayerConfigRecord *config);
+    
+    virtual Fixed MaxAcceleration();
 };

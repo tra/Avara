@@ -66,6 +66,8 @@ class CAbstractYon;
 class CHUD;
 
 class CAvaraGame : public CDirectObject {
+private:
+    long frameTime; //	In milliseconds.
 public:
     OSType loadedTag;
     OSType loadedDirectory;
@@ -74,6 +76,7 @@ public:
     Str255 loadedDesigner = "";
     Str255 loadedInfo = "";
     long loadedTimeLimit;
+    long timeInMsec;
     long timeInSeconds;
     long frameNumber;
     int32_t frameAdjust;
@@ -81,7 +84,6 @@ public:
     long topSentFrame;
 
     long latencyFrameTime; //	In milliseconds.
-    long frameTime; //	In milliseconds.
     short gameStatus;
     short statusRequest;
     short pausePlayer;
@@ -244,7 +246,10 @@ public:
 
     virtual double FrameTimeScale(double exponent=1);
 
-    virtual void AdjustLatencyFrameTime();
+    virtual long RoundTripToFrameLatency(long rtt);
+    virtual void AdjustFrameTime();
+    virtual long BaseFrameTime();
+    virtual long FrameTime();
 };
 
 #ifndef MAINAVARAGAME

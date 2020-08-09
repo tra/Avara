@@ -247,7 +247,7 @@ bool CRosterWindow::DoCommand(int theCommand) {
 std::string CRosterWindow::GetStringStatus(short status, Fixed winFrame) {
     std::string strStatus;
     if (winFrame >= 0) {
-        long timeTemp = FMulDiv(winFrame, ((CAvaraAppImpl *)gApplication)->GetGame()->frameTime, 10);
+        long timeTemp = FMulDiv(winFrame, ((CAvaraAppImpl *)gApplication)->GetGame()->FrameTime(), 10);
         auto hundreds1 = timeTemp % 10;
         timeTemp /= 10;
         auto hundreds2 = timeTemp % 10;

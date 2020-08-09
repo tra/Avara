@@ -68,7 +68,7 @@ public:
     //	Movement related variables:
     Fixed baseMass;
     Fixed motors[2]; //	Left/right speed
-    Fixed maxAcceleration;
+    // Fixed maxAcceleration;
     Fixed motorFriction;
     Fixed turningEffect; //	How far apart are the legs or wheels?
     Fixed movementCost; //	Cost of acceleration
@@ -220,4 +220,6 @@ public:
         Fixed *delta,
         CSmartPart **hostPart);
     virtual void WasHit(RayHitRecord *theHit, Fixed hitEnergy);
+
+    virtual Fixed MaxAcceleration();
 };

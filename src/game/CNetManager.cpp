@@ -147,7 +147,7 @@ void CNetManager::ChangeNet(short netKind, std::string address, std::string pass
                 case kServerNet:
                     CUDPComm *theServer;
                     theServer = new CUDPComm;
-                    theServer->IUDPComm(kMaxAvaraPlayers - 1, TCPNETPACKETS, kAvaraNetVersion, itsGame->frameTime);
+                    theServer->IUDPComm(kMaxAvaraPlayers - 1, TCPNETPACKETS, kAvaraNetVersion, itsGame->BaseFrameTime());
                     theServer->StartServing();
                     newManager = theServer;
                     confirm = theServer->isConnected;
@@ -155,7 +155,7 @@ void CNetManager::ChangeNet(short netKind, std::string address, std::string pass
                 case kClientNet:
                     CUDPComm *theClient;
                     theClient = new CUDPComm;
-                    theClient->IUDPComm(kMaxAvaraPlayers - 1, TCPNETPACKETS, kAvaraNetVersion, itsGame->frameTime);
+                    theClient->IUDPComm(kMaxAvaraPlayers - 1, TCPNETPACKETS, kAvaraNetVersion, itsGame->BaseFrameTime());
                     theClient->Connect(address, password);
                     newManager = theClient;
                     confirm = theClient->isConnected;
@@ -679,11 +679,10 @@ void CNetManager::AutoLatencyControl(long frameNumber, Boolean didWait) {
                     addOneLatency = 1;
                 }
 
-                maxFrameLatency = addOneLatency + (maxRoundTripLatency + itsGame->frameTime) /
-                                                      (itsGame->frameTime + itsGame->frameTime);
+                maxFrameLatency = addOneLatency + itsGame->RoundTripToFrameLatency(maxRoundTripLatency);
 
                 SDL_Log("maxFrameLatency=%ld autoLatencyVote=%ld addOneLatency=%d maxRoundLatency=%d frameTime=%ld\n",
-                        maxFrameLatency, autoLatencyVote, addOneLatency, maxRoundTripLatency, itsGame->frameTime);
+                        maxFrameLatency, autoLatencyVote, addOneLatency, maxRoundTripLatency, itsGame->FrameTime());
 
                 if (maxFrameLatency > 8)
                     maxFrameLatency = 8;
@@ -705,7 +704,7 @@ void CNetManager::AutoLatencyControl(long frameNumber, Boolean didWait) {
 
                 if (didChange) {
                     SDL_Log("*** LT set to %ld\n", itsGame->latencyTolerance);
-                    itsGame->AdjustLatencyFrameTime();
+                    itsGame->AdjustFrameTime();
                     /*
                     if(itsGame->latencyTolerance > 1) {
                         itsGame->latencyTolerance = 1;

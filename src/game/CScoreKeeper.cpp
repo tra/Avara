@@ -58,7 +58,7 @@ void CScoreKeeper::IScoreKeeper(CAvaraGame *theGame) {
     iface.plugIn = NULL;
     iface.maxPlayers = kMaxAvaraPlayers;
     iface.maxTeams = kMaxTeamColors;
-    iface.frameTime = itsGame->frameTime;
+    iface.frameTime = itsGame->FrameTime();
     iface.frameNumber = -1;
 
     iface.resultsHandle = GetResource('TEXT', 300);
