@@ -690,7 +690,7 @@ void CNetManager::AutoLatencyControl(long frameNumber, Boolean didWait) {
                             frameNumber, itsGame->latencyFrameTime, maxFrameLatency, autoLatencyVote, addOneLatency, maxRoundTripLatency);
                 #endif
 
-                itsGame->SetLatencyTolerance(maxFrameLatency, 2, maxPlayer->GetPlayerName().c_str());
+                itsGame->SetLatencyTolerance(maxFrameLatency, 4, maxPlayer->GetPlayerName().c_str());
                 itsCommManager->frameTimeScale = itsGame->LatencyFrameTimeScale();
             }
 
