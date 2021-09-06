@@ -10,6 +10,11 @@
 #include "CGlowActors.h"
 
 #include "CSmartPart.h"
+#define FRAG_HUNTER 1
+#if FRAG_HUNTER
+#include "CWalkerActor.h"
+#include "CPlayerManager.h"
+#endif
 
 extern Fixed FRandSeed;
 
@@ -70,5 +75,10 @@ void CGlowActors::FrameAction() {
     // then this number will be different and will be noticed in CNetManager::AutoLatencyControl
     Fixed locsum = location[0] + location[1] + location[2];
     FRandSeed += locsum;
-    // SDL_Log("frameNumber = %ld, FRandSeed = %10d, locsum = %8d, Actor = %s", gCurrentGame->frameNumber, (Fixed)FRandSeed, locsum, typeid(*this).name());
+    #if FRAG_HUNTER
+        if (typeid(*this) == typeid(CWalkerActor)) {
+            SDL_Log("fn = %ld, player[%d]: locsum = %8d, FRandSeed = %10d\n",
+            gCurrentGame->frameNumber, ((CWalkerActor*)this)->itsManager->Slot(), locsum, (Fixed)FRandSeed);
+        }
+    #endif
 }

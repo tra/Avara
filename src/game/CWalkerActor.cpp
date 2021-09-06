@@ -19,6 +19,11 @@
 #include "CViewParameters.h"
 #include "KeyFuncs.h"
 
+#define FRAG_HUNTER 1
+#if FRAG_HUNTER
+#include "CPlayerManager.h"
+#endif
+
 #define SCOUTPLATFORM FIX3(1500)
 #define MAXHEADHEIGHT FIX3(1750)
 #define MINHEADHEIGHT FIX3(900)
@@ -670,6 +675,16 @@ void CWalkerActor::MotionControl() {
 }
 
 void CWalkerActor::KeyboardControl(FunctionTable *ft) {
+
+    #if FRAG_HUNTER
+        SDL_Log("     %ld, player[%d]: down=0x%.8x, up=0x%.8x, held=0x%.8x, btn=0x%.2x, msg=0x%.2x, m.h=%d, m.v=%d\n",
+                gCurrentGame->frameNumber, itsManager->Slot(),
+                ft->down, ft->up, ft->held, ft->buttonStatus, ft->msgChar,
+                ft->mouseDelta.h, ft->mouseDelta.v);
+    #endif
+
+
+
     Fixed savedAcceleration;
 
     PrepareForLegUndo();

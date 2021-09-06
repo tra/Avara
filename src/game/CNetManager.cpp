@@ -700,6 +700,12 @@ void CNetManager::AutoLatencyControl(long frameNumber, Boolean didWait) {
             if (fragmentDetected) {
                 itsGame->itsApp->MessageLine(kmFragmentAlert, centerAlign);
                 fragmentDetected = false;
+                #define FRAG_HUNTER 1
+                #if FRAG_HUNTER
+                    // send the pause command so we can debug this shit
+                    itsGame->statusRequest = kPauseStatus;
+                    itsGame->pausePlayer = itsGame->GetLocalPlayer()->itsManager->Slot();
+                #endif
             }
 
             if ((serverOptions & (1 << kUseAutoLatencyBit)) && autoLatencyVoteCount) {
