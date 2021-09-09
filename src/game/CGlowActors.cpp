@@ -77,8 +77,9 @@ void CGlowActors::FrameAction() {
     FRandSeed += locsum;
     #if FRAG_HUNTER
         if (typeid(*this) == typeid(CWalkerActor)) {
-            SDL_Log("fn = %ld, player[%d]: locsum = %8d, FRandSeed = %10d\n",
-            gCurrentGame->frameNumber, ((CWalkerActor*)this)->itsManager->Slot(), locsum, (Fixed)FRandSeed);
+            SDL_Log("fn = %ld, player[%d]: locsum = %8d, FRandSeed = %10d, loc=%s\n",
+            gCurrentGame->frameNumber, ((CWalkerActor*)this)->itsManager->Slot(), locsum, (Fixed)FRandSeed,
+            FormatVector(location, 3).c_str());
         }
     #endif
 }

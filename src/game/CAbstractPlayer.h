@@ -15,6 +15,19 @@
 #include "KeyFuncs.h"
 #include "PlayerConfig.h"
 
+#define ENABLE_FRAG_DEBUG
+#ifdef ENABLE_FRAG_DEBUG
+#include <iostream>
+using namespace std;
+#define FRAG_DEBUG(stuff) { \
+  stringstream _fd_buf; \
+  _fd_buf << stuff; \
+  SDL_Log("     %ld, player[%d]: %s", itsGame->frameNumber, itsManager->Slot(), _fd_buf.str().c_str()); \
+}
+#else
+#define FRAG_DEBUG(stuff) // noop
+#endif
+
 class CBSPPart;
 class CScout;
 class CPlayerManager;

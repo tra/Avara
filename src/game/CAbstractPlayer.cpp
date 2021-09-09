@@ -506,6 +506,7 @@ void CAbstractPlayer::ReturnWeapon(short theKind) {
     switch (theKind) {
         case kweSmart:
             missileCount++;
+            FRAG_DEBUG("<<<---missile RETURNED, count = " << missileCount << endl);
             break;
         case kweGrenade:
             grenadeCount++;
@@ -536,6 +537,7 @@ void CAbstractPlayer::ArmSmartMissile() {
             weaponIdent = theWeapon->Arm(viewPortPart);
             if (weaponIdent) {
                 missileCount--;
+                FRAG_DEBUG(">>>---missile ARMED, count = " << missileCount << endl);
                 nextMissileLoad = itsGame->FramesFromNow(3);
             }
         } else
@@ -617,6 +619,10 @@ void CAbstractPlayer::KeyboardControl(FunctionTable *ft) {
             FpsCoefficients(classicMotorFriction, FMul(classicMotorFriction, classicMotorAcceleration),
                            &motorFriction, &motorAcceleration, &fpsMotorOffset);
 
+            FRAG_DEBUG("baseMass=" << baseMass << ", hullMass=" << CRealMovers::GetTotalMass() <<
+                       ", b/g/m = " << boostsRemaining << "/" << grenadeCount << "/" << missileCount <<
+                       ", totalmass=" << GetTotalMass() << endl);
+
             if (itsGame->isClassicFrame) {
                 FPS_DEBUG("----------------------------------------------------" << std::endl);
                 FPS_DEBUG("baseMass = " << baseMass << ", totalmass = " << GetTotalMass() << ", classicFriction = " << classicMotorFriction << ", friction = " << motorFriction << ", classicAcceleration = " << classicMotorAcceleration << ", acceleration = " << motorAcceleration << ", fpsMotorOffset = " << fpsMotorOffset << std::endl);
@@ -648,6 +654,10 @@ void CAbstractPlayer::KeyboardControl(FunctionTable *ft) {
                 motionFlags |= 1 + 8; // +left, -right
                 FPS_DEBUG("  ** kfuRight **");
             }
+
+            FRAG_DEBUG("motionFlags=0x" << hex << motionFlags << dec <<
+                       ", fpsMotorOffset=" << fpsMotorOffset <<
+                       ", motorAcceleration=" << motorAcceleration << "\n");
 
             if (motionFlags & 1) {
                 if (motors[0] <= 0) { // switching direction or starting to move
@@ -880,6 +890,10 @@ void CAbstractPlayer::MotionControl() {
 
     avrgHeading = heading + (headChange >> 1);
 
+    FRAG_DEBUG("motors=" << FormatVector(motors, 2) <<
+               ", turningEffect=" << turningEffect <<
+               ", headChange = " << headChange << "\n");
+
     // in XZ plane, important to keep those indices straight when used with speed
     motorDir[0] = FMul(FOneSin(avrgHeading), distance);
     motorDir[1] = FMul(FOneCos(avrgHeading), distance);
@@ -908,6 +922,10 @@ void CAbstractPlayer::MotionControl() {
     }
     speed[0] = FMul(speed[0], scale1) + FMul(motorDir[0] + groundSlide[0], scale2);
     speed[2] = FMul(speed[2], scale1) + FMul(motorDir[1] + groundSlide[2], scale2);
+
+    FRAG_DEBUG("speed=" << FormatVector(speed, 3) <<
+               ", gS=" << FormatVector(groundSlide, 3) <<
+               ", mD=" << FormatVector(motorDir, 2) << "\n");
 
     FPS_DEBUG("   headChange = " << headChange << ", supportTraction = " << supportTraction << "   slideLen = " << slideLen << std::endl);
     FPS_DEBUG("after slide speed = " << FormatVector(speed, 3) << std::endl);
@@ -1518,14 +1536,17 @@ void CAbstractPlayer::PlayerWasMoved() {
 }
 
 void CAbstractPlayer::TakeGoody(GoodyRecord *gr) {
+    if (gr->grenades > 0 && grenadeCount < grenadeLimit) FRAG_DEBUG("taking GRENADES\n");
     grenadeCount += gr->grenades;
     if (grenadeCount > grenadeLimit)
         grenadeCount = grenadeLimit;
 
+    if (gr->missiles > 0 && missileCount < missileLimit) FRAG_DEBUG("taking MISSILES\n");
     missileCount += gr->missiles;
     if (missileCount > missileLimit)
         missileCount = missileLimit;
 
+    if (gr->boosters > 0 && boostsRemaining < boosterLimit) FRAG_DEBUG("taking BOOSTERS\n");
     boostsRemaining += gr->boosters;
     if (boostsRemaining > boosterLimit)
         boostsRemaining = boosterLimit;
