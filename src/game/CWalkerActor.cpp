@@ -684,7 +684,6 @@ void CWalkerActor::KeyboardControl(FunctionTable *ft) {
     #endif
 
 
-
     Fixed savedAcceleration;
 
     PrepareForLegUndo();
