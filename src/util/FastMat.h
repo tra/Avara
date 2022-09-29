@@ -68,11 +68,32 @@ void MRotateZ(Fixed s, Fixed c, Matrix *theMatrix);
 void MTranslate(Fixed xt, Fixed yt, Fixed zt, Matrix *theMatrix);
 
 static inline Fixed FMul(Fixed a, Fixed b) { return ((int64_t)a * (int64_t)b) / (1 << 16); }
-static inline Fixed FDiv(Fixed a, Fixed b) { return ((int64_t)a * (1 << 16)) / b; }
-static inline Fixed FMulDiv(Fixed a, Fixed b, Fixed c) { return (long)(((double)a) * b / c); }
+static inline Fixed _FDiv(Fixed a, Fixed b) { return ((int64_t)a * (1 << 16)) / b; }
+static inline Fixed _FMulDiv(Fixed a, Fixed b, Fixed c) { return (long)(((double)a) * b / c); }
 
-#define FDivNZ FDiv
-#define FMulDivNZ FMulDiv
+#include <sstream>
+static inline Fixed _FDivNZ(Fixed a, Fixed b) {
+    if (b == 0) {
+        std::ostringstream oss;
+        oss << __FILE__ << ":" << __LINE__ << ": " << " Divide by zero";
+        throw std::invalid_argument(oss.str());
+    }
+    return _FDiv(a,b);
+}
+
+static inline Fixed _FMulDivNZ(Fixed a, Fixed b, Fixed c) {
+    if (c == 0) {
+        std::ostringstream oss;
+        oss << __FILE__ << ":" << __LINE__ << ": " << " Divide by zero";
+        throw std::invalid_argument(oss.str());
+    }
+    return _FMulDiv(a,b,c);
+}
+
+#define FDiv _FDivNZ
+#define FDivNZ _FDivNZ
+#define FMulDiv _FMulDivNZ
+#define FMulDivNZ _FMulDivNZ
 #define FMulDivV FMulDiv
 #define FMulDivVNZ FMulDiv
 

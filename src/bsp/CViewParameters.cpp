@@ -136,7 +136,7 @@ void CViewParameters::IViewParameters() {
     viewPixelCenter.h = viewPixelDimensions.h / 2;
     viewPixelCenter.v = viewPixelDimensions.v / 2;
 
-    viewWidth = FMulDivNZ(FIX3(220), viewPixelDimensions.h, 640);
+    viewWidth = FMulDivNZ(FIX3(220), FIX1, 640);
     viewDistance = FIX3(300); //	Display distance 30 cm
 
     Recalculate();

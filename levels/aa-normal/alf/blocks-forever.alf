@@ -1,5 +1,8 @@
 <map>
+  <Incarnator y="30" stop="@start" cx="65.83333333333334" cz="81.49305555555556" angle="325" />
+  <Incarnator y="33" stop="@start" cx="65.83333333333334" cz="81.49305555555556" angle="325" />
   <Incarnator y="15" cx="80.52083333333334" cz="66.84027777777779" angle="45" />
+
   <Sound y="50" sound="snArcticWind" isAmbient="true" loopCount="-1" volume="100" cx="66.07638888888889" cz="80.55555555555556" angle="225" />
   <Teleporter shape="0" y="200" win="1000" start="@winTeam" activeRange="2000" fill="#009600" frame="#000000" cx="66.07638888888889" cz="80.55555555555556" angle="225" />
   <set inVector="0.3" designer="Malkavian - Oesian@jhu.edu" information="Blocks Forever:
@@ -37,8 +40,6 @@
   <Field head="270" deltaX="inVector * cos head" deltaZ="inVector * sin head" deltaY="0" fill="#fffda9" frame="#000000" cx="65.55555555555556" cz="58.958333333333336" angle="0" x="49.61805555555556" z="63.64583333333334" w="5.625" d="1.875" h="0" />
   <Field head="0" deltaX="inVector * cos head" deltaZ="inVector * sin head" deltaY="0" fill="#fffda9" frame="#000000" cx="65.55555555555556" cz="58.958333333333336" angle="0" x="53.333333333333336" z="65.52083333333334" w="1.8055555555555571" d="5.625" h="0" />
   <Wall fill="#ffffff" frame="#d82da9" x="50.55555555555556" z="66.45833333333334" w="5" d="5" h="3.25" />
-  <Teleporter group="-1" y="-30" activeRange="40 * 5" deadRange="30 * 5" destGroup="@recenter" shape="0" fill="#ffffff" frame="#000000" cx="64.96527777777779" cz="80.83333333333334" angle="225" />
-  <Teleporter y="30" shape="0" group="@recenter" fill="#ffffff" frame="#000000" cx="64.96527777777779" cz="80.83333333333334" angle="225" />
   <unique vars="mShow mTaken" />
   <And in="@start" out="mShow" />
   <Timer in="mTaken" out="mShow" wait="350" />
@@ -50,11 +51,11 @@
   <Wall fill="#010e68" frame="#d82da9" x="25.243055555555557" z="81.45833333333334" w="5.625" d="75" h="12.5" />
   <Incarnator y="15" cx="50.69444444444444" cz="96.84027777777779" angle="225" />
   <Incarnator y="15" cx="50.9375" cz="66.84027777777779" angle="315" />
+  <Teleporter group="-1" y="-30" activeRange="40 * 5" deadRange="30 * 5" destGroup="@recenter" shape="0" fill="#ffffff" frame="#000000" cx="64.96527777777779" cz="80.83333333333334" angle="225" />
+  <Teleporter y="30" shape="0" group="@recenter" fill="#ffffff" frame="#000000" cx="64.96527777777779" cz="80.83333333333334" angle="225" />
   <Teleporter group="-1" y="-30" activeRange="35 * 5" deadRange="28 * 5" destGroup="@recenter" shape="0" fill="#009600" frame="#000000" cx="65.55555555555556" cz="81.45833333333334" angle="225" />
   <Teleporter y="30" shape="0" group="@recenter" fill="#009600" frame="#000000" cx="65.55555555555556" cz="81.45833333333334" angle="225" />
   <Teleporter shape="0" y="200" win="1000" start="@winTeam" activeRange="2000" fill="#009600" frame="#000000" cx="65.55555555555556" cz="81.45833333333334" angle="225" />
-  <Incarnator y="30" stop="@start" cx="65.83333333333334" cz="81.49305555555556" angle="325" />
-  <Incarnator y="33" stop="@start" cx="65.83333333333334" cz="81.49305555555556" angle="325" />
   <unique vars="mShow mTaken" />
   <And in="@start" out="mShow" />
   <Timer in="mTaken" out="mShow" wait="350" />
