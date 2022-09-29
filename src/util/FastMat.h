@@ -72,30 +72,18 @@ static inline Fixed _FDiv(Fixed a, Fixed b) { return ((int64_t)a * (1 << 16)) / 
 static inline Fixed _FMulDiv(Fixed a, Fixed b, Fixed c) { return (long)(((double)a) * b / c); }
 
 #include <sstream>
-static inline Fixed _FDivNZ(Fixed a, Fixed b) {
-    if (b == 0) {
-        std::ostringstream oss;
-        oss << __FILE__ << ":" << __LINE__ << ": " << " Divide by zero";
-        throw std::invalid_argument(oss.str());
-    }
-    return _FDiv(a,b);
+static inline bool FThrowDivideZero(const char* errFile, int errLine) {
+    std::ostringstream oss;
+    oss << "FastMat Error: " << errFile << ":" << errLine << " Divide by zero\n";
+    throw std::invalid_argument(oss.str());
 }
 
-static inline Fixed _FMulDivNZ(Fixed a, Fixed b, Fixed c) {
-    if (c == 0) {
-        std::ostringstream oss;
-        oss << __FILE__ << ":" << __LINE__ << ": " << " Divide by zero";
-        throw std::invalid_argument(oss.str());
-    }
-    return _FMulDiv(a,b,c);
-}
-
-#define FDiv _FDivNZ
-#define FDivNZ _FDivNZ
-#define FMulDiv _FMulDivNZ
-#define FMulDivNZ _FMulDivNZ
-#define FMulDivV FMulDiv
-#define FMulDivVNZ FMulDiv
+#define FDivNZ(a, b)        (b == 0 ? FThrowDivideZero(__FILE__, __LINE__) : _FDiv(a, b))
+#define FMulDivNZ(a, b, c)  (c == 0 ? FThrowDivideZero(__FILE__, __LINE__) : _FMulDiv(a, b, c))
+#define FDiv                FDivNZ
+#define FMulDiv             FMulDivNZ
+#define FMulDivV            FMulDiv
+#define FMulDivVNZ          FMulDivNZ
 
 #define FHALFPI 102944
 #define FONEPI 205887
